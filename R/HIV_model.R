@@ -60,28 +60,42 @@ a_P_SoC["C", "Death", ] <- 0.250 # From C to Death
 a_P_SoC["Death", "Death", ] <- 1 # From Death to Death
 
 #### Transitions for New Treatment -------------------------------------------
-## Transitions from health state A
-a_P_NT["A", "A", ] <- 0.721 # From A to A
-a_P_NT["A", "B", ] <- 0.202 # From A to B
-a_P_NT["A", "C", ] <- 0.067 # From A to C
-a_P_NT["A", "Death", ] <- 0.010 # From A to Death
-
-## Transitions from health state B
-a_P_NT["B", "B", ] <- 0.581 # From B to B
-a_P_NT["B", "C", ] <- 0.407 # From B to C
-a_P_NT["B", "Death", ] <- 0.012 # From B to Death
-
-## Transitions from health state C
-a_P_NT["C", "C", ] <- 0.750 # From C to C
-a_P_NT["C", "Death", ] <- 0.250 # From C to Death
-
-# Transitions from health state Death
-a_P_NT["Death", "Death", ] <- 1 # From Death to Death
+# Note: for this comparator, all transitions in the first two years are dependent on
+# the relative risk of moving to another state, i.e., conditional on being on the 
+# New Treatment
 
 # New Treatment effect risk ratio for two years of New Treatment
 n_rr_trteffect <- 0.509 # treatment effect
-# Condition transitions from health state A on trt effect using chain rule
-# a_P_NT["A", "A", 1:2] <- 
+
+## Transitions from health state A
+a_P_NT["A", "A", ] <- a_P_SoC["A", "A", ] # from A to A
+a_P_NT["A", "B", ] <- a_P_SoC["A", "B", ] # from A to B
+a_P_NT["A", "C", ] <- a_P_SoC["A", "C", ] # from A to C
+a_P_NT["A", "Death", ] <- a_P_SoC["A", "Death", ] # from A to Death
+## Transitions from health state B
+a_P_NT["B", "B", ] <- a_P_SoC["B", "B", ] # from B to B
+a_P_NT["B", "C", ] <- a_P_SoC["B", "C", ] # from B to C
+a_P_NT["B", "Death", ] <- a_P_SoC["B", "Death", ] # from B to Death
+
+## Transitions from health state C
+a_P_NT["C", "C", ] <- a_P_SoC["C", "C", ] # from C to C
+a_P_NT["C", "Death", ] <- a_P_SoC["C", "Death", ] # from C to Death
+
+# Transitions from health state Death
+a_P_NT["Death", "Death", ] <- a_P_SoC["Death", "Death", ] # from Death to Death
+
+##### Corrected transitions for first two years on New Treatment --------------
+# Transitions from State A in first two years
+a_P_NT["A", "B", 1:2] <- a_P_SoC["A", "B", 1:2] * n_rr_trteffect # from A to B
+a_P_NT["A", "C", 1:2] <- a_P_SoC["A", "C", 1:2] * n_rr_trteffect # from A to C
+a_P_NT["A", "Death", 1:2] <- a_P_SoC["A", "Death", 1:2] * n_rr_trteffect # from A to Death
+a_P_NT["A", "A", 1:2] <- (1 - a_P_NT["A", "Death", 1:2]) * (1 - a_P_NT["A", "C", 1:2]) * (1 - a_P_NT["A", "B", 1:2]) # from A to A, using chain rule
+# i.e., A to A is conditional on the joint distribution of not moving to other states etc. for B to B and C to C transitions
+
+# Transitions from State B in first two years
+a_P_NT["B", "C", 1:2] <- a_P_SoC["B", "C", 1:2] * n_rr_trteffect # from B to C
+a_P_NT["B", "Death", 1:2] <- a_P_SoC["B", "Death", 1:2] * n_rr_trteffect # from B to Death
+a_P_NT["B", "B", 2:2] <- (1 - a_P_NT["B", "C", 1:2]) * (1 - a_P_NT["B", "Death", 1:2]) # from B to B, using chain rule
 
 # Model model -------------------------------------------------------------
 # Create initial state vector for all health states at t = 0
