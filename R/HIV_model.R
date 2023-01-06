@@ -95,7 +95,11 @@ a_P_NT["A", "A", 1:2] <- (1 - a_P_NT["A", "Death", 1:2]) * (1 - a_P_NT["A", "C",
 # Transitions from State B in first two years
 a_P_NT["B", "C", 1:2] <- a_P_SoC["B", "C", 1:2] * n_rr_trteffect # from B to C
 a_P_NT["B", "Death", 1:2] <- a_P_SoC["B", "Death", 1:2] * n_rr_trteffect # from B to Death
-a_P_NT["B", "B", 2:2] <- (1 - a_P_NT["B", "C", 1:2]) * (1 - a_P_NT["B", "Death", 1:2]) # from B to B, using chain rule
+a_P_NT["B", "B", 1:2] <- (1 - a_P_NT["B", "C", 1:2]) * (1 - a_P_NT["B", "Death", 1:2]) # from B to B, using chain rule
+
+# Transitions from State C in first two years
+a_P_NT["C", "Death", 1:2] <- a_P_SoC["C", "Death", 1:2] * n_rr_trteffect # from C to Death
+a_P_NT["C", "C", 1:2] <- 1 - a_P_NT["C", "Death", 1:2] # from C to C
 
 # Model model -------------------------------------------------------------
 # Create initial state vector for all health states at t = 0
