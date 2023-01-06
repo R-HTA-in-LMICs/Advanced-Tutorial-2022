@@ -101,7 +101,7 @@ a_P_NT["B", "B", 1:2] <- (1 - a_P_NT["B", "C", 1:2]) * (1 - a_P_NT["B", "Death",
 a_P_NT["C", "Death", 1:2] <- a_P_SoC["C", "Death", 1:2] * n_rr_trteffect # from C to Death
 a_P_NT["C", "C", 1:2] <- 1 - a_P_NT["C", "Death", 1:2] # from C to C
 
-# Model model -------------------------------------------------------------
+# Markov model -------------------------------------------------------------
 # Create initial state vector for all health states at t = 0
 v_s_init <- c("A" = 1, "B" = 0, "C" = 0, "Death" = 0) # initial state vector
 # Initialize cohort trace for age-dependent cSTMs
