@@ -61,8 +61,8 @@ a_P_SoC["Death", "Death", ] <- 1 # From Death to Death
 
 #### Transitions for New Treatment -------------------------------------------
 # Note: for this comparator, all transitions in the first two years are dependent on
-# the relative risk of moving to another state, i.e., conditional on being on the 
-# New Treatment
+# the relative risk of moving to another state, i.e., conditional on being on New 
+# Treatment
 
 # New Treatment effect risk ratio for two years of New Treatment
 n_rr_trteffect <- 0.509 # treatment effect
@@ -127,7 +127,7 @@ for (t in 1:n_cycles) {
 
 ### Visualisation of Markov trace -------------------------------------------
 # Associates each state with a colour:
-cols <- c("A" = "#BD1B00", "B" = "#FA7700", "C" = "#FAD343", "Death" = "#B3BABA")
+cols <- c("A" = "#FF0000", "B" = "#FF7400", "C" = "black", "Death" = "#00B6FF")
 # Associates similar states with similar line types:
 lty <-  c("A" = 1, "B" = 2, "C" = 3, "Death" = 4)
 
@@ -191,4 +191,55 @@ le_ad_2 <- sum(v_S_ad_2)
 le_ad_2
 
 # Economic Analysis -------------------------------------------------------
-# to be continued
+# Initialize transition-dynamics array under SoC and New Treatment
+a_A_SoC <- array(0,
+             dim = c(n_states, n_states, (n_cycles + 1)),
+             dimnames = list(v_names_states, v_names_states, 0:n_cycles))
+# New Treatment
+a_A_NT <- a_A_SoC
+
+# Set first slice to the initial state vector in its diagonal
+diag(a_A_SoC[, , 1]) <- v_s_init
+diag(a_A_NT[, , 1]) <- v_s_init
+
+# Iterative solution to produce the transition-dynamics array under SoC:
+for (t in 1:n_cycles){
+ a_A_SoC[, , t + 1] <- diag(m_M_SoC[t, ]) %*% a_P_SoC[ , , t]
+}
+
+# Iterative solution to produce the transition-dynamics array under New Treatment
+for (t in 1:n_cycles){
+ a_A_NT[, , t + 1] <- diag(m_M_NT[t, ]) %*% a_P_NT[ , , t]
+}
+
+## Costs -------------------------------------------------------------------
+# Drug costs
+c_AZT <- 2278 # Zidovudine drug cost
+c_Lam <- 2086.50 # Lamivudine drug cost
+# Treatment costs
+c_SoC <- c_AZT # SoC monotherapy
+c_NewTrt <- c_AZT + c_Lam # New Treatment combination therapy
+
+# Direct health state costs
+c_direct_state_A <- 1701 # direct costs associated with health state A
+c_direct_state_B <- 1774 # direct costs associated with health state B
+c_direct_state_C <- 6948 # direct costs associated with health state C
+# Indirect health state costs
+c_indirect_state_A <- 1055 # indirect costs associated with health state A
+c_indirect_state_B <- 1278 # indirect costs associated with health state B
+c_indirect_state_C <- 2059 # indirect costs associated with health state C
+
+# Vector of costs:
+v_c_SoC <- c(c_direct_state_A, c_direct_state_B, c_direct_state_C, 0)
+# Array of state costs for Standard of Care:
+a_c_SoC <- array(matrix(v_c_SoC, nrow = n_states, ncol = n_states, byrow = T),
+                  dim = c(n_states, n_states, n_cycles + 1),
+                  dimnames = list(v_names_states, v_names_states, 0:n_cycles))
+a_c_NT <- a_c_SoC
+# Total costs
+## Standard of Care
+a_Y_c_SoC <- a_A_SoC * a_c_SoC
+## Standard of Care
+a_Y_c_NT <- a_A_NT * a_c_NT
+
+# QALYs -------------------------------------------------------------------
