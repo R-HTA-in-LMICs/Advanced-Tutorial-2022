@@ -1,5 +1,5 @@
 # Advanced R Programming Tutorial 2022: Make your health economic model Shiny!
-This repository stores the code, presentations, and material used in the R-HTA in LMICs Advanced 2022 Workshop (held in January 2023). The following sections provide a breakdown of the primary documents and guidance on how to use them for your own personal training. The tutorial is based on several open-source materials (see citations), specifically the coding framework for R in HTA developed by the [DARTH](https://darthworkgroup.com) group and the Shiny framework for HTA developed by [Dark Peaks](https://darkpeakanalytics.com).
+This repository stores the code, presentations, and material used in the R-HTA in LMICs Advanced 2022 Workshop (held in January 2023). The following sections provide a breakdown of the primary documents and guidance on how to use them for your own personal training. The tutorial is based on several open-source frameworks for R in HTA (see [citations](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022#citation) section), developed by the [DARTH](https://darthworkgroup.com) group and the Shiny framework for HTA developed by [Dark Peaks](https://darkpeakanalytics.com).
 
 ## Navigation
 
@@ -7,16 +7,20 @@ The [`R`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main/R) 
 
 The [`Excel`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main/Excel) folder includes the original model's solution template, provided by Oxford's [Health Economics Research Centre (HERC)](https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation).
 
+The [`shiny`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main/shiny/hiv_model) folder includes the code used to develop and run the Shiny application version of the cost-effectiveness model.
+
 ## Preliminaries
 
 -   Install [RStudio](https://www.rstudio.com/products/rstudio/download/)
 -   Install [`dampack`](https://cran.r-project.org/web/packages/dampack/index.html) R package from CRAN
+-   Install [`shiny`](https://cran.r-project.org/web/packages/shiny/index.html) R package from CRAN
 
 ```{r, eval=FALSE}
 # Install release version from CRAN
-install.packages("dampack")
+install.packages(c("dampack", "shiny"))
 
-# Or install development version from GitHub
+# For dampack specifically, you can also install the development version of the
+# package from GitHub
 # devtools::install_github("DARTH-git/dampack")
 ```
 
@@ -43,11 +47,13 @@ We also recommend familiarising with the useful [DARTH](http://darthworkgroup.co
 
 -   Alarid-Escudero F, Krijkamp EM, Pechlivanoglou P, Jalal HJ, Kao SYZ, Yang A, Enns EA. [A Need for Change! A Coding Framework for Improving Transparency in Decision Modeling](https://link.springer.com/article/10.1007/s40273-019-00837-x). [PharmacoEconomics](https://www.springer.com/journal/40273), 2190;37(11):1329--1339. <https://doi.org/10.1007/s40273-019-00837-x>
 
-Laslty, we strongly recommended familiarising yourself with Shiny before undertaking thos tutorial:
+Lastly, we *strongly* recommended familiarising yourself with Shiny before undertaking the tutorial
+
 - [Getting started with Shiny](https://ourcodingclub.github.io/tutorials/shiny/)
 - [A Gentle Introduction to creating R Shiny Web Apps](https://www.youtube.com/watch?v=jxsKUxkiaLI)
 
 ## Citation
+
 This tutorial is based on open-source R code frameworks for HTA:
 
 > Alarid-Escudero F, Krijkamp EM, Enns EA, Yang A, Hunink MGM, Pechlivanoglou P, Jalal H. A Tutorial on Time-Dependent Cohort State-Transition Models in R using a Cost-Effectiveness Analysis Example (<https://arxiv.org/abs/2108.13552>). arXiv:2108.13552v2. 2022:1-37.
@@ -57,4 +63,5 @@ This tutorial is based on open-source R code frameworks for HTA:
 > Smith R and Schneider P. [Making health economic models Shiny](https://doi.org/10.12688/wellcomeopenres.15807.1): A tutorial. Wellcome Open Res 2020, 5:69.
 
 # Additional Information
-Visit our [webpage](https://r-hta-in-lmics.github.io/) and follow the links to our social media to keep up-to-date on our latest tutorials. Alternatively, follow us on [EventBrite](https://www.eventbrite.co.uk/o/r-hta-in-lmics-46016978693) to receive notifications for when new events go live!
+
+Visit our [webpage](https://r-hta-in-lmics.github.io/) and follow the links to our social media to keep up-to-date with our latest tutorials. Alternatively, follow us on [EventBrite](https://www.eventbrite.co.uk/o/r-hta-in-lmics-46016978693) to receive notifications for when new events go live!
