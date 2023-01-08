@@ -11,9 +11,9 @@ The [`shiny`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main
 
 ## Preliminaries
 
--   Install [RStudio](https://www.rstudio.com/products/rstudio/download/)
--   Install [`dampack`](https://cran.r-project.org/web/packages/dampack/index.html) R package from CRAN
--   Install [`shiny`](https://cran.r-project.org/web/packages/shiny/index.html) R package from CRAN
+-  Install the [RStudio](https://www.rstudio.com/products/rstudio/download/) IDE.
+
+-  Install the [`dampack`](https://cran.r-project.org/web/packages/dampack/index.html) and [`shiny`](https://cran.r-project.org/web/packages/shiny/index.html) R packages from CRAN.
 
 ```{r, eval=FALSE}
 # Install release version from CRAN
@@ -23,8 +23,7 @@ install.packages(c("dampack", "shiny"))
 # package from GitHub
 # devtools::install_github("DARTH-git/dampack")
 ```
-
--   Install `devtools` to install [`darthtools`](https://github.com/DARTH-git/darthtools) R package from [DARTH's GitHub](https://github.com/DARTH-git)
+-  Install `devtools` to install [`darthtools`](https://github.com/DARTH-git/darthtools) R package from [DARTH's GitHub](https://github.com/DARTH-git)
 
 ```{r, eval=FALSE}
 # Install release version from CRAN
@@ -34,7 +33,7 @@ install.packages("devtools")
 # devtools::install_github("r-lib/devtools")
 ```
 
--   Install `darthtools` using `devtools`
+-  Install `darthtools` using `devtools`
 
 ```{r, eval=FALSE}
 # Install development version from GitHub
