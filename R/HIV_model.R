@@ -203,7 +203,7 @@ a_A_NT <- a_A_SoC
 diag(a_A_SoC[, , 1]) <- v_s_init
 diag(a_A_NT[, , 1]) <- v_s_init
 
-# Iterative solution to produce the transition-dynamics array under SoC:
+# Iterative solution to produce the transition-dynamics array under SoC
 for (t in 1:n_cycles){
  a_A_SoC[, , t + 1] <- diag(m_M_SoC[t, ]) %*% a_P_SoC[ , , t]
 }
@@ -216,9 +216,6 @@ for (t in 1:n_cycles){
 # Drug costs
 c_AZT <- 2278 # Zidovudine drug cost (monotheray)
 c_Lam <- 2086.50 # Lamivudine drug cost (added therapy)
-# Treatment costs
-c_SoC <- c_AZT # SoC monotherapy
-c_NewTrt <- c_AZT + c_Lam # New Treatment combination therapy
 
 # Direct health state costs
 c_direct_state_A <- 1701 # direct costs associated with health state A
@@ -281,5 +278,6 @@ v_costs_disc_NT <- t(m_costs_NT) %*% v_dwc # NT costs
 
 ## Cost-effectiveness ------------------------------------------------------
 icer <- (v_costs_disc_NT - v_costs_disc_SoC) / (v_lys_disc_NT - v_lys_disc_SoC) # deterministic icer
+icer # where NT is the reference treatment
 
 # End of file -------------------------------------------------------------

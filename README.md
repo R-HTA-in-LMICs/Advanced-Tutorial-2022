@@ -5,7 +5,7 @@ This repository stores the code, presentations, and material used in the R-HTA i
 
 The [`R`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main/R) folder includes a standalone R script code that replicates an original model presented in chapter two of '*Decision Modelling for Health Economic Evaluation* by Briggs A., et al.
 
-The [`Excel`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main/Excel) folder includes the original model's solution template, provided by Oxford's [Health Economics Research Centre (HERC)](https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation).
+The [`Excel`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main/Excel) folder includes the original model's solution template, developed in Excel, provided by Oxford's [Health Economics Research Centre (HERC)](https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation).
 
 The [`shiny`](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022/tree/main/shiny/hiv_model) folder includes the code used to develop and run the Shiny application version of the cost-effectiveness model.
 
