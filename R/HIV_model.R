@@ -1,35 +1,36 @@
 # Misc settings -----------------------------------------------------------
 pkgs <- c("BCEA", "dampack", "reshape2", "tidyverse", "darthtools")
 
-# Install packages not yet installed:
+# Install packages if not installed
 installed_packages <- pkgs %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
  install.packages(pkgs[!installed_packages])
 }
 
-# Load required packages:
+# Load required packages
 invisible(lapply(pkgs, library, character.only = TRUE))
 
 # Model Settings ----------------------------------------------------------
 # The following Markov model, coded in R, adapts the HIV/AIDS model found in 
 # the book 'Decision Modelling in Health Economics' by Briggs et al.
 
-# This section runs through the general the settings of the HIV/AIDS model as well 
-# as creating the structure of the transition array and markov trace.
+# This section runs through the general the settings of the HIV/AIDS model and 
+# defines the structure of the transition array and markov trace.
 
+# Cohort settings
 n_age_min <- 40 # age at baseline
 n_age_max <- 60 # maximum age of follow up
 n_cycles <- n_age_max - n_age_min # time horizon, number of cycles
 
-# Define the names of the health states of the model:
+# Define the names of the health states of the model
 v_names_states <- c("A", "B", "C", "Death")
 n_states <- length(v_names_states) # record the number of health states
 
 # define number of stochastic simulations
-n_sims <- 1000
+# n_sims <- 1000
 
 ## Transition Array --------------------------------------------------------
-# Transition array for each comparative intervention:
+# Transition array for each comparative intervention
 a_P_SoC <- array(0, 
                dim = c(n_states, n_states, n_cycles),
                dimnames = list(
@@ -126,12 +127,12 @@ for (t in 1:n_cycles) {
 }
 
 ### Visualisation of Markov trace -------------------------------------------
-# Associates each state with a colour:
+# Associates each state with a colour
 cols <- c("A" = "#FF0000", "B" = "#FF7400", "C" = "black", "Death" = "#00B6FF")
-# Associates similar states with similar line types:
+# Associates health states with specific line types
 lty <-  c("A" = 1, "B" = 2, "C" = 3, "Death" = 4)
 
-# Visualisation of cohort proportions for Status Quo:
+# Visualisation of cohort proportions for Status Quo
 ggplot(melt(apply(m_M_SoC, c(1, 2), mean)), aes(x = Var1, y = value, 
                       color = Var2, linetype = Var2)) +
  geom_line(size = 0.5) +
@@ -146,7 +147,7 @@ ggplot(melt(apply(m_M_SoC, c(1, 2), mean)), aes(x = Var1, y = value,
   theme(legend.position = "bottom", 
         legend.background = element_rect(fill = NA),
         text = element_text(size = 15))
-# Survival curve for Markov Status Quo:
+# Survival curve for Markov Status Quo
 v_S_ad_1 <- 1 - m_M_SoC[, "Death"]  # vector with survival curve
 ggplot(data.frame(Cycle = 0:n_cycles, Survival = v_S_ad_1), 
        aes(x = Cycle, y = Survival)) +
@@ -157,7 +158,7 @@ ggplot(data.frame(Cycle = 0:n_cycles, Survival = v_S_ad_1),
   theme_bw(base_size = 14) +
   theme()
 
-# Visualisation of cohort proportions for New Treatment:
+# Visualisation of cohort proportions for New Treatment
 ggplot(melt(apply(m_M_NT, c(1, 2), mean)), aes(x = Var1, y = value, 
                       color = Var2, linetype = Var2)) +
  geom_line(size = 0.5) +
@@ -172,7 +173,7 @@ ggplot(melt(apply(m_M_NT, c(1, 2), mean)), aes(x = Var1, y = value,
   theme(legend.position = "bottom", 
         legend.background = element_rect(fill = NA),
         text = element_text(size = 15))
-# Survival curve for Markov New Treatment:
+# Survival curve for Markov New Treatment
 v_S_ad_2 <- 1 - m_M_NT[, "Death"]  # vector with survival curve
 ggplot(data.frame(Cycle = 0:n_cycles, Survival = v_S_ad_1), 
        aes(x = Cycle, y = Survival)) +
@@ -183,10 +184,10 @@ ggplot(data.frame(Cycle = 0:n_cycles, Survival = v_S_ad_1),
   theme_bw(base_size = 14) +
   theme()
 
-# Life expectancy for average individual in Markov model 1 cohort:
+# Life expectancy for average individual in Markov model 1 cohort
 le_ad_1 <- sum(v_S_ad_1)
 le_ad_1
-# Life expectancy for average individual in Markov model  cohort:
+# Life expectancy for average individual in Markov model  cohort
 le_ad_2 <- sum(v_S_ad_2)
 le_ad_2
 
@@ -206,16 +207,15 @@ diag(a_A_NT[, , 1]) <- v_s_init
 for (t in 1:n_cycles){
  a_A_SoC[, , t + 1] <- diag(m_M_SoC[t, ]) %*% a_P_SoC[ , , t]
 }
-
 # Iterative solution to produce the transition-dynamics array under New Treatment
 for (t in 1:n_cycles){
  a_A_NT[, , t + 1] <- diag(m_M_NT[t, ]) %*% a_P_NT[ , , t]
 }
 
-## Costs -------------------------------------------------------------------
+### Costs -------------------------------------------------------------------
 # Drug costs
-c_AZT <- 2278 # Zidovudine drug cost
-c_Lam <- 2086.50 # Lamivudine drug cost
+c_AZT <- 2278 # Zidovudine drug cost (monotheray)
+c_Lam <- 2086.50 # Lamivudine drug cost (added therapy)
 # Treatment costs
 c_SoC <- c_AZT # SoC monotherapy
 c_NewTrt <- c_AZT + c_Lam # New Treatment combination therapy
@@ -231,15 +231,55 @@ c_indirect_state_C <- 2059 # indirect costs associated with health state C
 
 # Vector of costs:
 v_c_SoC <- c(c_direct_state_A, c_direct_state_B, c_direct_state_C, 0)
-# Array of state costs for Standard of Care:
+# Array of state costs for Standard of Care
 a_c_SoC <- array(matrix(v_c_SoC, nrow = n_states, ncol = n_states, byrow = T),
                   dim = c(n_states, n_states, n_cycles + 1),
                   dimnames = list(v_names_states, v_names_states, 0:n_cycles))
-a_c_NT <- a_c_SoC
+# Note: the advantage of creating a cost array with the same dimensions as the 
+# transition array is that you can take advantage of vectorisation - which is very
+# fast in R.
+
+# Add drug costs
+a_c_SoC[ , c("A", "B", "C"), ] <- a_c_SoC[ , c("A", "B", "C"), ] + c_AZT  # drug costs for SoC
+a_c_NT <- a_c_SoC # create New Treatment costs array 
+a_c_NT[ , c("A", "B", "C"), 1:2] <- a_c_NT[ , c("A", "B", "C"), 1:2] + c_Lam # drug costs for NT (combination therapy for first two cycles, mono therafter)
+
 # Total costs
 ## Standard of Care
 a_Y_c_SoC <- a_A_SoC * a_c_SoC
 ## Standard of Care
 a_Y_c_NT <- a_A_NT * a_c_NT
 
-# QALYs -------------------------------------------------------------------
+# Calculate total costs per cycle
+m_costs_SoC <- rowSums(t(colSums(a_Y_c_SoC))) # SoC
+m_costs_NT <- rowSums(t(colSums(a_Y_c_NT))) # New Treatment
+
+### Life Years --------------------------------------------------------------
+# Standard of Care
+m_lys_SoC <- rowSums(t(colSums(a_A_SoC[, c("A", "B", "C"), ]))) # LYs per cycle
+sum(rowSums(t(colSums(a_A_SoC[, c("A", "B", "C"), ])))) # Total LYs
+
+# New Treatment
+m_lys_NT <- rowSums(t(colSums(a_A_NT[, c("A", "B", "C"), ]))) # LYs per cycle
+sum(rowSums(t(colSums(a_A_NT[, c("A", "B", "C"), ])))) # Total LYs
+
+### Discounting -------------------------------------------------------------
+# Discount rates
+d_e <- 0.0
+d_c <- 0.03
+# Discount weights for costs
+v_dwc <- 1 / ((1 + d_c) ^ (0:n_cycles))
+# Discount weights for effects
+v_dwe <- 1 / ((1 + d_e) ^ (0:n_cycles))
+
+# Apply discount
+v_lys_disc_SoC <- t(m_lys_SoC) %*% v_dwe # SoC QALYs
+v_costs_disc_SoC <- t(m_costs_SoC) %*% v_dwc # SoC costs
+
+v_lys_disc_NT <- t(m_lys_NT) %*% v_dwe # NT QALYs
+v_costs_disc_NT <- t(m_costs_NT) %*% v_dwc # NT costs
+
+## Cost-effectiveness ------------------------------------------------------
+icer <- (v_costs_disc_NT - v_costs_disc_SoC) / (v_lys_disc_NT - v_lys_disc_SoC) # deterministic icer
+
+# End of file -------------------------------------------------------------
