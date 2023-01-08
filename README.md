@@ -1,5 +1,5 @@
 # Advanced R Programming Tutorial 2022: Make your health economic model Shiny!
-This repository stores the code, presentations, and material used in the R-HTA in LMICs Advanced 2022 Workshop (held in January 2023). The following sections provide a breakdown of the primary documents and guidance on how to use them for your own personal training. The tutorial is based on several open-source frameworks for R in HTA (see [citations](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022#citation) section), developed by the [DARTH](https://darthworkgroup.com) group and the Shiny framework for HTA developed by [Dark Peaks](https://darkpeakanalytics.com).
+This repository stores the code, presentations, and material used in the R-HTA in LMICs Advanced 2022 Workshop (held in January 2023). The following sections provide a breakdown of the primary documents and guidance on how to use them for your own personal training. The tutorial is based on several open-source frameworks for modelling CEAs and Shiny apps in R for HTA (see the [citations](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022#citations) section), developed by [DARTH](https://darthworkgroup.com) group and [Dark Peaks](https://darkpeakanalytics.com).
 
 ## Navigation
 
@@ -52,7 +52,7 @@ Lastly, we *strongly* recommended familiarising yourself with Shiny before under
 - [Getting started with Shiny](https://ourcodingclub.github.io/tutorials/shiny/)
 - [A Gentle Introduction to creating R Shiny Web Apps](https://www.youtube.com/watch?v=jxsKUxkiaLI)
 
-## Citation
+## Citations
 
 This tutorial is based on open-source R code frameworks for HTA:
 
