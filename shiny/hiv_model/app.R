@@ -1,128 +1,133 @@
-# install.packages("shiny") # necessary if you don't already have the function 'shiny' installed.
-# we need the function shiny installed, this loads it from the library.
-library(shiny)             
+# Misc settings -----------------------------------------------------------
+pkgs <- c("dampack", "reshape2", "tidyverse", "darthtools", "shinyWidgets")
 
-# source the wrapper function.
-source("./App/wrapper.R")   
+# Install packages if not installed
+installed_packages <- pkgs %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+ install.packages(pkgs[!installed_packages])
+}
+
+# Load required packages
+invisible(lapply(pkgs, library, character.only = TRUE))
+
+# run economic analysis using the code found in the wrapper function:
+source("wrapper.R")
 
 # User interface ----------------------------------------------------------
 # Create user interface using fluidpage function
 ui <- fluidPage(
- titlePanel("Case Study in HIV Model: making your model Shiny!"), # title of app
- 
- # SIDEBAR
-  sidebarLayout(         # indicates layout is going to be a sidebar-layout
-   sidebarPanel(                             # open sidebar panel
-      numericInput(inputId = "c_Trt_1",      # id of input, used in server
-                   label = "Treatment Cost",  # label next to numeric input
-                   value = 200,               # initial value
-                   min = 0,                   # minimum value allowed
-                   max = 10000),              # maximum value allowed
+ # Set theme
+ theme = bslib::bs_theme(bootswatch = "simplex"),
+ # Create title panel with company logo
+ titlePanel(title = div(img(src = "avatar.png", height = 60, align = "center"), # add logo
+                        "A Case Study in HIV", # title
+                        style = "color: #3765B9"), # text colour
+            windowTitle = "Making your model Shiny!"), # title text colour
+ # Sidebar controls
+  sidebarLayout(                # indicates layout is going to be a sidebar-layout
+   sidebarPanel(                              # open sidebar panel
+      numericInput(inputId = "c_Trt_1",       # id of input, used in server
+                   label = "SoC Treatment Cost", # label next to numeric input
+                   value = 2278,              # default cost value for Treatment 2
+                   min = 0),                  # minimum value allowed
       
-      sliderInput(inputId = "SI_n_age_init",  # id of input, used in server
-                  label = "Initial Age",      # label next to numeric input
-                  value = 25,                 # initial value
+      numericInput(inputId = "c_Trt_2",       # id of input, used in server
+                   label = "Comparator Treatment Cost", # label next to numeric input
+                   value = 2086.50,           # default cost value for Treatment 2
+                   min = 0),                  # minimum value allowed
+      
+      sliderInput(inputId = "SI_n_age_min",   # id of input, used in server
+                  label = "Baseline Age",     # label next to numeric input
+                  value = 40,                 # initial value
                   min = 10,                   # minimum value allowed
-                  max = 80),                  # maximum value allowed
-      
+                  max = 60),                  # maximum value allowed
       
       actionButton(inputId = "run_model",     # id of action button, used in server
                    label   = "Run model")     # action button label (on button)
-      
-    ),  # close sidebarPanel
-    
-    mainPanel(                                # open main panel
-      
-      h3("Results Table"),                    # heading (results table)                
-      
-      tableOutput(outputId = "SO_icer_table"),   # tableOutput id = icer_table, from server
-      
-      h3("Cost-effectiveness Plane"),         # heading (Cost effectiveness plane)
-      
-      plotOutput(outputId = "SO_CE_plane")       # plotOutput id = CE_plane, from server
-      
-    ) # close mainpanel    
-    
-  ) # close sidebarlayout
-  
-) # close UI fluidpage
+    # close sidebarPanel
+    ),
+   # Create main panel
+   mainPanel(
+    # Create tabs for numeric and graphical summaries
+      tabsetPanel(
+       # Economic results tab
+       tabPanel("Economic Results",  icon = icon("calculator"),
+                # using titlePanel to add white space above plots
+                titlePanel(
+                 column(width = 12,
+                        tableOutput(outputId = "SO_icer_table"))
+                 )),
+       # Graphical summaries tab
+       tabPanel("Graphical Summaries", icon = icon("chart-line"),
+                # using titlePanel to add white space above plots
+                titlePanel(
+                 # create fluidRow
+                 fluidRow(
+                  # set column width for each trace plot
+                  column(width = 6, plotOutput(outputId = "VO_cohort_plot_SoC")), # SoC
+                  column(width = 6, plotOutput(outputId = "VO_cohort_plot_NT")) # NT
+                  )))
+       ) # end of tabsetPanel
+    ) # end of mainPanel
+  ) # end of sidebarLayout
+) # end of UI fluidPage
 
-
-#================================================================
-#                     Create Server Function
-#================================================================
-
+# Server function ---------------------------------------------------------
 server <- function(input, output){   # server = function with two inputs
   
-  observeEvent(input$run_model,       # when action button pressed ...
+  observeEvent(input$run_model,       # when action button pressed
                ignoreNULL = F, {
                  
                  # Run model wrapper function with the Shiny inputs and store as data-frame 
-                 df_model_res = f_wrapper(c_Trt = input$c_Trt_1,
-                                          n_age_init = input$SI_n_age_init,
+                 df_model_res = f_wrapper(c_Trt_1 = input$c_Trt_1,
+                                          c_Trt_2 = input$c_Trt_2,
+                                          n_age_min = input$SI_n_age_min,
                                           n_sim = input$SI_n_sim)
                  
-                 
-                 #--- CREATE COST EFFECTIVENESS PLANE ---#
+                 # Economic analysis --------------------------------------
+                 # Creates table output of economic analysis results from wrapper function
                  output$SO_icer_table <- renderTable({ # this continuously updates table
+                   # Create dataframe
+                  df_res_table <- data.frame(
+                   Treatment =  c("Comparator","Standard of Care"),
                    
-                   df_res_table <- data.frame( # create dataframe
-                     
-                     Option =  c("Treatment","No Treatment"), 
-                     
-                     QALYs  =  c(mean(df_model_res$QALY_Trt),mean(df_model_res$QALY_NoTrt)),
-                     
-                     Costs  =  c(mean(df_model_res$Cost_Trt),mean(df_model_res$Cost_NoTrt)),
-                     
-                     Inc.QALYs = c(mean(df_model_res$QALY_Trt) - mean(df_model_res$QALY_NoTrt),NA),
-                     
-                     Inc.Costs = c(mean(df_model_res$Cost_Trt) - mean(df_model_res$Cost_NoTrt),NA),
-                     
-                     ICER = c(mean(df_model_res$ICER),NA)
+                   LYs  =  c(df_model_res[[1]]["LYs_NT"], df_model_res[[1]]["LYs_SoC"]),
+                   
+                   Costs  =  c(df_model_res[[1]]["Cost_NT"], df_model_res[[1]]["Cost_SoC"]),
+                   
+                   Inc.LYs = c(df_model_res[[1]]["LYs_NT"] - df_model_res[[1]]["LYs_SoC"], NA),
+                   
+                   Inc.Costs = c(df_model_res[[1]]["Cost_NT"] - df_model_res[[1]]["Cost_SoC"], NA),
+                   
+                   ICER = c(df_model_res[[1]]["ICER"], NA)
                    )
-                   
-                   # round the dataframe to two digits so looks tidier
-                   df_res_table[,2:6] <- round(df_res_table[,2:6],digits = 2) 
-                   
-                   #print the dataframe
-                   df_res_table
-                   
-                 }) # table plot end.
+                  
+                  # print dataframe
+                  df_res_table
+                  
+                 }, hover = TRUE, width = "100%", digits = 2, align = "c", 
+                 striped = TRUE)
                  
-                 
-                 #---  CREATE COST EFFECTIVENESS PLANE ---#
-                 output$SO_CE_plane <- renderPlot({ # render plot repeatedly updates.
-                   
-                   # calculate incremental costs and qalys from results dataframe
-                   df_model_res$inc_C <- df_model_res$Cost_Trt - df_model_res$Cost_NoTrt
-                   df_model_res$inc_Q <- df_model_res$QALY_Trt - df_model_res$QALY_NoTrt
-                   
-                   # create cost effectiveness plane plot
-                   plot(x = df_model_res$inc_Q, # x axis incremental QALYS
-                        y = df_model_res$inc_C, # y axis incremental Costs
-                        #label axes
-                        xlab = "Incremental QALYs", 
-                        ylab = "Incremental Costs", 
-                        
-                        # set xlimits and ylimits for plot.
-                        xlim = c(min(df_model_res$inc_Q,df_model_res$inc_Q*-1),
-                                 max(df_model_res$inc_Q,df_model_res$inc_Q*-1)),
-                        ylim = c(min(df_model_res$inc_C,df_model_res$inc_C*-1),
-                                 max(df_model_res$inc_C,df_model_res$inc_C*-1)),
-                        # include y and y axis lines.
-                        abline(h = 0,v=0)
-                   ) # plot end 
-                 }) # renderplot end
-                 
-               }) # Observe Event End
-  
-  
-} # Server end
+                 # Visualisation outputs ---------------------------------------------------
+                 # Plot of cohort trace for SoC
+                 output$VO_cohort_plot_SoC <- renderPlot({ # render plot repeatedly updates
+                  # Render cohort trace for SoC
+                  df_model_res[[2]] + 
+                   ggtitle("Comparator") + 
+                   theme(plot.title = element_text(hjust = 0.5))
+                  }) # Soc plot end
+                  # Plot of cohort trace for NT
+                 output$VO_cohort_plot_NT <- renderPlot({ # render plot repeatedly updates
+                  # Render cohort trace for SoC
+                  df_model_res[[3]] + 
+                   ggtitle("Standard of Care") +
+                   theme(plot.title = element_text(hjust = 0.5))
+                  }) # Soc plot end
+               }) # observe Event End
+# Server end 
+}
 
-  
-
-
-
-## ----- run app------
-
+# Run app -----------------------------------------------------------------
 shinyApp(ui, server)
+
+# End file ----------------------------------------------------------------
