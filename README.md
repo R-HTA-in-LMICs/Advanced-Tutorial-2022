@@ -51,7 +51,7 @@ Lastly, we *strongly* recommended familiarising yourself with Shiny before under
 
 ## Citations
 
-This tutorial is based on open-source R code frameworks for HTA:
+This tutorial is based on several open-source R coding frameworks for HTA:
 
 > Alarid-Escudero F, Krijkamp EM, Enns EA, Yang A, Hunink MGM, Pechlivanoglou P, Jalal H. A Tutorial on Time-Dependent Cohort State-Transition Models in R using a Cost-Effectiveness Analysis Example (<https://arxiv.org/abs/2108.13552>). arXiv:2108.13552v2. 2022:1-37.
 
