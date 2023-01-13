@@ -1,5 +1,5 @@
 # Misc settings -----------------------------------------------------------
-pkgs <- c("dampack", "reshape2", "tidyverse", "darthtools", "shinyWidgets")
+pkgs <- c("dampack", "reshape2", "tidyverse", "darthtools", "shiny", "shinyWidgets")
 
 # Install packages if not installed
 installed_packages <- pkgs %in% rownames(installed.packages())
