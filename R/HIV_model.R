@@ -119,14 +119,10 @@ m_M_SoC[1, ] <- v_s_init
 m_M_NT[1, ] <- v_s_init
 
 ## Markov Trace ------------------------------------------------------------
-# Iterative solution of age-dependent cSTM Status Quo
 for (t in 1:n_cycles) {
-  # Fill in cohort trace
+  # Iterative solution of cSTM Status Quo
   m_M_SoC[t + 1, ] <- m_M_SoC[t, ] %*% a_P_SoC[ , , t]
-}
-# Iterative solution of age-dependent cSTM New Treatment
-for (t in 1:n_cycles) {
-  # Fill in cohort trace
+  # Iterative solution of cSTM New Treatment
   m_M_NT[t + 1, ] <- m_M_NT[t, ] %*% a_P_NT[ , , t]
 }
 
@@ -193,7 +189,7 @@ ggplot(data.frame(Cycle = 0:n_cycles, Survival = v_S_ad_1),
 # Life expectancy for average individual in Markov model 1 cohort
 le_ad_1 <- sum(v_S_ad_1)
 le_ad_1
-# Life expectancy for average individual in Markov model  cohort
+# Life expectancy for average individual in Markov model cohort
 le_ad_2 <- sum(v_S_ad_2)
 le_ad_2
 
@@ -209,12 +205,10 @@ a_A_NT <- a_A_SoC
 diag(a_A_SoC[, , 1]) <- v_s_init
 diag(a_A_NT[, , 1]) <- v_s_init
 
-# Iterative solution to produce the transition-dynamics array under SoC
 for (t in 1:n_cycles){
+ # Iterative solution to produce the transition-dynamics array under SoC
  a_A_SoC[, , t + 1] <- diag(m_M_SoC[t, ]) %*% a_P_SoC[ , , t]
-}
-# Iterative solution to produce the transition-dynamics array under New Treatment
-for (t in 1:n_cycles){
+ # Iterative solution to produce the transition-dynamics array under New Treatment
  a_A_NT[, , t + 1] <- diag(m_M_NT[t, ]) %*% a_P_NT[ , , t]
 }
 
