@@ -1,12 +1,6 @@
 # Misc settings -----------------------------------------------------------
 pkgs <- c("dampack", "reshape2", "tidyverse", "darthtools", "shiny", "shinyWidgets")
 
-# Install packages if not installed
-installed_packages <- pkgs %in% rownames(installed.packages())
-if (any(installed_packages == FALSE)) {
- install.packages(pkgs[!installed_packages])
-}
-
 # Load required packages
 invisible(lapply(pkgs, library, character.only = TRUE))
 
