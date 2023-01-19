@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 rsconnect/
+shiny/.DS_Store
+shiny/hiv_model/.DS_Store

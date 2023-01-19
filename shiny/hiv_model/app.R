@@ -1,8 +1,8 @@
 # Misc settings -----------------------------------------------------------
-pkgs <- c("dampack", "reshape2", "tidyverse", "darthtools", "shiny", "shinyWidgets")
-
-# Load required packages
-invisible(lapply(pkgs, library, character.only = TRUE))
+library(reshape2)
+library(tidyverse)
+library(shiny)
+library(shinyWidgets)
 
 # run economic analysis using the code found in the wrapper function:
 source("wrapper.R")
@@ -11,7 +11,7 @@ source("wrapper.R")
 # Create user interface using fluidpage function
 ui <- fluidPage(
  # Set theme
- theme = bslib::bs_theme(bootswatch = "simplex"),
+ theme = bslib::bs_theme(bootswatch = "yeti"),
  # Create title panel with company logo
  titlePanel(title = div(img(src = "avatar.png", height = 60, align = "center"), # add logo
                         "A Case Study in HIV", # title
