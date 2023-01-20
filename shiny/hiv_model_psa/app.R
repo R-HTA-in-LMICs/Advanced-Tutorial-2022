@@ -17,7 +17,7 @@ source("wrapper.R")
 # Create user interface using fluidpage function
 ui <- fluidPage(
  # Set theme
- theme = bslib::bs_theme(bootswatch = "simplex"),
+ theme = bslib::bs_theme(bootswatch = "yeti"),
  # Create title panel with company logo
  titlePanel(title = div(img(src = "avatar.png", height = 60, align = "center"), # add logo
                         "A Case Study in HIV", # title
@@ -41,6 +41,12 @@ ui <- fluidPage(
                   value = 40,                 # initial value
                   min = 10,                   # minimum value allowed
                   max = 60),                  # maximum value allowed
+     
+      sliderInput(inputId = "SI_n_sim",   # id of input, used in server
+                  label = "Number of PSA runs",     # label next to numeric input
+                  value = 100,                 # initial value
+                  min = 10,                    # minimum value allowed
+                  max = 120),                  # maximum value allowed
       
       actionButton(inputId = "run_model",     # id of action button, used in server
                    label   = "Run model")     # action button label (on button)
@@ -64,8 +70,7 @@ ui <- fluidPage(
                  # create fluidRow
                  fluidRow(
                   # set column width for each trace plot
-                  column(width = 6, plotOutput(outputId = "VO_cohort_plot_SoC")), # SoC
-                  column(width = 6, plotOutput(outputId = "VO_cohort_plot_NT")) # NT
+                  column(width = 12, plotOutput(outputId = "CE_plane"))
                   )))
        ) # end of tabsetPanel
     ) # end of mainPanel
@@ -91,15 +96,15 @@ server <- function(input, output){   # server = function with two inputs
                   df_res_table <- data.frame(
                    Treatment =  c("Comparator","Standard of Care"),
                    
-                   LYs  =  c(df_model_res[[1]]["LYs_NT"], df_model_res[[1]]["LYs_SoC"]),
+                   LYs  =  c(mean(df_model_res[, 4]), mean(df_model_res[, 3])),
                    
-                   Costs  =  c(df_model_res[[1]]["Cost_NT"], df_model_res[[1]]["Cost_SoC"]),
+                   Costs  =  c(mean(df_model_res[, 2]), mean(df_model_res[, 1])),
                    
-                   Inc.LYs = c(df_model_res[[1]]["LYs_NT"] - df_model_res[[1]]["LYs_SoC"], NA),
+                   Inc.LYs = c(mean(df_model_res[, 4]) -  mean(df_model_res[, 3]), NA),
                    
-                   Inc.Costs = c(df_model_res[[1]]["Cost_NT"] - df_model_res[[1]]["Cost_SoC"], NA),
+                   Inc.Costs = c(mean(df_model_res[, 2]) -  mean(df_model_res[, 1]), NA),
                    
-                   ICER = c(df_model_res[[1]]["ICER"], NA)
+                   ICER = c(mean(df_model_res[, 5]), NA)
                    )
                   
                   # print dataframe
@@ -109,20 +114,31 @@ server <- function(input, output){   # server = function with two inputs
                  striped = TRUE)
                  
                  # Visualisation outputs ---------------------------------------------------
-                 # Plot of cohort trace for SoC
-                 output$VO_cohort_plot_SoC <- renderPlot({ # render plot repeatedly updates
-                  # Render cohort trace for SoC
-                  df_model_res[[2]] + 
-                   ggtitle("Comparator") + 
-                   theme(plot.title = element_text(hjust = 0.5))
-                  }) # Soc plot end
-                  # Plot of cohort trace for NT
-                 output$VO_cohort_plot_NT <- renderPlot({ # render plot repeatedly updates
-                  # Render cohort trace for SoC
-                  df_model_res[[3]] + 
-                   ggtitle("Standard of Care") +
-                   theme(plot.title = element_text(hjust = 0.5))
-                  }) # Soc plot end
+                 output$CE_plane <- renderPlot({
+                  
+                  # calculate incremental costs
+                  inc_Costs <- df_model_res[, 2] - df_model_res[, 1]
+                  # calculate incremental LYs
+                  inc_LYs <- df_model_res[, 4] - df_model_res[, 3]
+                  
+                  # create cost effectiveness plane plot
+                  plot(
+                   # x y are incremental QALYs Costs
+                   x = inc_LYs,
+                   y = inc_Costs,
+                   # label axes
+                   xlab = "Incremental LYs",
+                   ylab = "Incremental Costs",
+                   # set plot x-axis limits
+                   xlim = c(min(inc_LYs, inc_LYs * -1),
+                            max(inc_LYs, inc_LYs * -1)),
+                   # set plot y-axis limits
+                   ylim = c(min(inc_Costs, inc_Costs * -1),
+                            max(inc_Costs, inc_Costs * -1)),
+                   # include y and y axis lines.
+                   abline(h = 0, v = 0)) 
+                  # CE plot end 
+                 })
                }) # observe Event End
 # Server end 
 }

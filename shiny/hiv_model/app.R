@@ -18,7 +18,7 @@ ui <- fluidPage(
                         style = "color: #3765B9"), # text colour
             windowTitle = "Making your model Shiny!"), # title text colour
  # Sidebar controls
-  sidebarLayout(                # indicates layout is going to be a sidebar-layout
+  sidebarLayout( # indicates layout is going to be a sidebar-layout
    sidebarPanel(                              # open sidebar panel
       numericInput(inputId = "c_Trt_1",       # id of input, used in server
                    label = "SoC Treatment Cost", # label next to numeric input

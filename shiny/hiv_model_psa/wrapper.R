@@ -10,7 +10,7 @@ f_wrapper <- function(
  d_r = 0.035,       # default discount rate for costs & QALYS (NICE 3.5%)
  c_Trt_1 = 2278,    # cost of treatment default 2278
  c_Trt_2 = 2086.50, # cost of treatment default 2086.50
- n_sim = 1000       # default simulations
+ n_sim = 100        # default simulations
  ){
  
   ## Non-shiny inputs --------------------------------------------------------

@@ -189,7 +189,7 @@ ggplot(data.frame(Cycle = 0:n_cycles, Survival = v_S_ad_1),
 # Life expectancy for average individual in Markov model 1 cohort
 le_ad_1 <- sum(v_S_ad_1)
 le_ad_1
-# Life expectancy for average individual in Markov model cohort
+# Life expectancy for average individual in Markov model 2 cohort
 le_ad_2 <- sum(v_S_ad_2)
 le_ad_2
 
