@@ -1,5 +1,5 @@
 # Set-up
-rm(list=ls())
+rm(list = ls())
 
 # Function wrapper ----------------------------------------------------------
 f_wrapper <- function(
