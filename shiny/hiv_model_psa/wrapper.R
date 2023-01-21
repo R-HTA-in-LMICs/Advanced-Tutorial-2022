@@ -7,9 +7,10 @@ f_wrapper <- function(
  ## Shiny Inputs ------------------------------------------------------------
  n_age_min = 40,    # age at baseline default is 40
  n_age_max = 60,    # max age of follow up default is 60
- d_r = 0.035,       # default discount rate for costs & QALYS (NICE 3.5%)
+ d_r = 0.035,       # default discount rate for costs & LYs (NICE 3.5%)
  c_Trt_1 = 2278,    # cost of treatment default 2278
  c_Trt_2 = 2086.50, # cost of treatment default 2086.50
+ n_rr_trteffect = 0.509, # risk ratio of mono vs combo therapy
  n_sim = 100        # default simulations
  ){
  
@@ -20,7 +21,7 @@ f_wrapper <- function(
 
 
  ## Generate parameter inputs -----------------------------------------------
-  gen_params_psa <- function(n_sim = 1000){
+  gen_params_psa <- function(n_sim = n_sim){
    # wrap parameter values in data frame
    df_params_psa <- data.frame(
     
@@ -52,7 +53,7 @@ f_wrapper <- function(
     p_DD = 1,         # transition from health states Death to Death
     
     # New Treatment effect risk ratio for two years of New Treatment
-    n_rr_trteffect = 0.509, # treatment effect
+    n_rr_trteffect = n_rr_trteffect, # treatment effect
    
    # Direct health state costs
    c_direct_state_A = rgamma(n = n_sim, shape = 1701, rate = 1), # direct costs associated with health state A
@@ -133,42 +134,35 @@ f_MM_hiv <- function(params) {
   m_M_SoC[1, , ] <- v_s_init
   m_M_NT[1, , ] <- v_s_init
   
-  ### Markov Trace ------------------------------------------------------------
-  # Iterative solution of cSTM Status Quo
-  for (t in 1:n_cycles) {
-   for (i in 1:n_sim) {
-    # Fill cohort trace
-    m_M_SoC[t + 1, , i] <- m_M_SoC[t, , i] %*% a_P_SoC[ , , t, i]
-    # Iterative solution of cSTM New Treatment
-    m_M_NT[t + 1, , i] <- m_M_NT[t, , i] %*% a_P_NT[ , , t, i]
-   }
-  }
-  
-  ## Economic analysis -------------------------------------------------------
   # Initialize transition-dynamics array under SoC and New Treatment
-  a_A_SoC <- array(0, 
+  a_A_SoC <- array(0,
                    dim = c(n_states, n_states, (n_cycles + 1), n_sim),
                    dimnames = list(v_names_states, v_names_states, 0:n_cycles, 1:n_sim))
   # New Treatment
   a_A_NT <- a_A_SoC
   
-  for (i in 1:n_sim) {
+  for (i in 1:n_sim) { # loop through n_sim
    # Set first slice to the initial state vector in its diagonal
    diag(a_A_SoC[, , 1, i]) <- v_s_init
    diag(a_A_NT[, , 1, i]) <- v_s_init
    }
-
   
-  for (i in 1:n_sim){
-   for (t in 1:n_cycles) {
-    # Iterative solution to produce the transition-dynamics array under SoC
+  ### Markov Trace and Transition Dynamics Array ------------------------------
+  # Iterative solution of cSTM for SoC and New Treatment
+  for (i in 1:n_sim) { # loop through n_cycles
+   for (t in 1:n_cycles) { # loop through n_sim
+    # estimate the state vector for the next cycle (t + 1) for SoC
+    m_M_SoC[t + 1, , i] <- m_M_SoC[t, , i] %*% a_P_SoC[ , , t, i]
+    # estimate the transition dynamics at t + 1 for SoC
     a_A_SoC[, , t + 1, i] <- diag(m_M_SoC[t, , i]) %*% a_P_SoC[ , , t, i]
-    # Iterative solution to produce the transition-dynamics array under New Treatment
+    # estimate the state vector for the next cycle (t + 1) for New Treatment
+    m_M_NT[t + 1, , i] <- m_M_NT[t, , i] %*% a_P_NT[ , , t, i]
+    # estimate the transition dynamics at t + 1 for New Treatment
     a_A_NT[, , t + 1, i] <- diag(m_M_NT[t, , i]) %*% a_P_NT[ , , t, i]
-    }
    }
+  }
   
-
+  ## Economic analysis -------------------------------------------------------
   ### Costs and Rewards -------------------------------------------------------
   # Vector of costs
   v_c_SoC <- c(c_direct_state_A, c_direct_state_B, c_direct_state_C, 0)

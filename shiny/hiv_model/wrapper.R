@@ -124,13 +124,27 @@ f_MM_hiv <- function(params) {
   m_M_SoC[1, ] <- v_s_init
   m_M_NT[1, ] <- v_s_init
   
-  ### Markov Trace ------------------------------------------------------------
-  # Iterative solution of cSTM Status Quo
-  for (t in 1:n_cycles) {
-   # Fill cohort trace
+  # Initialize transition-dynamics array under SoC and New Treatment
+  a_A_SoC <- array(0, 
+                   dim = c(n_states, n_states, (n_cycles + 1)),
+                   dimnames = list(v_names_states, v_names_states, 0:n_cycles))
+  # New Treatment
+  a_A_NT <- a_A_SoC
+  # Set first slice to the initial state vector in its diagonal
+  diag(a_A_SoC[, , 1]) <- v_s_init
+  diag(a_A_NT[, , 1]) <- v_s_init
+  
+  ### Markov Trace and Transition Dynamics Array ------------------------------
+  # Iterative solution of cSTM for SoC and New Treatment
+  for (t in 1:n_cycles) { # loop through n_cycles
+   # estimate the state vector for the next cycle (t + 1) for SoC
    m_M_SoC[t + 1, ] <- m_M_SoC[t, ] %*% a_P_SoC[ , , t]
-   # Iterative solution of cSTM New Treatment
+   # estimate the transition dynamics at t + 1 for SoC
+   a_A_SoC[, , t + 1] <- diag(m_M_SoC[t, ]) %*% a_P_SoC[ , , t]
+   # estimate the state vector for the next cycle (t + 1) for New Treatment
    m_M_NT[t + 1, ] <- m_M_NT[t, ] %*% a_P_NT[ , , t]
+   # estimate the transition dynamics at t + 1 for New Treatment
+   a_A_NT[, , t + 1] <- diag(m_M_NT[t, ]) %*% a_P_NT[ , , t]
    }
   
   ### Visualisation of Markov trace -------------------------------------------
@@ -164,24 +178,6 @@ f_MM_hiv <- function(params) {
          text = element_text(size = 15))
   
   ## Economic analysis -------------------------------------------------------
-  # Initialize transition-dynamics array under SoC and New Treatment
-  a_A_SoC <- array(0, 
-                   dim = c(n_states, n_states, (n_cycles + 1)),
-                   dimnames = list(v_names_states, v_names_states, 0:n_cycles))
-  # New Treatment
-  a_A_NT <- a_A_SoC
-  
-  # Set first slice to the initial state vector in its diagonal
-  diag(a_A_SoC[, , 1]) <- v_s_init
-  diag(a_A_NT[, , 1]) <- v_s_init
-  
-  for (t in 1:n_cycles){
-   # Iterative solution to produce the transition-dynamics array under SoC
-   a_A_SoC[, , t + 1] <- diag(m_M_SoC[t, ]) %*% a_P_SoC[ , , t]
-   # Iterative solution to produce the transition-dynamics array under New Treatment
-   a_A_NT[, , t + 1] <- diag(m_M_NT[t, ]) %*% a_P_NT[ , , t]
-   }
-  
   ### Costs -------------------------------------------------------------------
   # Vector of costs
   v_c_SoC <- c(c_direct_state_A, c_direct_state_B, c_direct_state_C, 0)

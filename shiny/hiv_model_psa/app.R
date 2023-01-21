@@ -36,6 +36,13 @@ ui <- fluidPage(
                    value = 2086.50,           # default cost value for Treatment 2
                    min = 0),                  # minimum value allowed
       
+      numericInput(inputId = "n_rr_trteffect", # id of input, used in server
+                   label = "Risk Ratio: combo vs mono therapy", # label next to numeric input
+                   value = 0.509,           # default cost value for Treatment 2
+                   step = 0.01,             # defines interval steps when changed by user
+                   min = 0,                 # min value allowed
+                   max = 1),                # max value allowed  
+      
       sliderInput(inputId = "SI_n_age_min",   # id of input, used in server
                   label = "Baseline Age",     # label next to numeric input
                   value = 40,                 # initial value
@@ -96,15 +103,15 @@ server <- function(input, output){   # server = function with two inputs
                   df_res_table <- data.frame(
                    Treatment =  c("Comparator","Standard of Care"),
                    
-                   LYs  =  c(mean(df_model_res[, 4]), mean(df_model_res[, 3])),
+                   LYs  =  c(mean(df_model_res[, "LYs_NT"]), mean(df_model_res[, "LYs_SoC"])),
                    
-                   Costs  =  c(mean(df_model_res[, 2]), mean(df_model_res[, 1])),
+                   Costs  =  c(mean(df_model_res[, "Cost_NT"]), mean(df_model_res[, "Cost_SoC"])),
                    
-                   Inc.LYs = c(mean(df_model_res[, 4]) -  mean(df_model_res[, 3]), NA),
+                   Inc.LYs = c(mean(df_model_res[, "LYs_NT"]) -  mean(df_model_res[, "LYs_SoC"]), NA),
                    
-                   Inc.Costs = c(mean(df_model_res[, 2]) -  mean(df_model_res[, 1]), NA),
+                   Inc.Costs = c(mean(df_model_res[, "Cost_NT"]) -  mean(df_model_res[, "Cost_SoC"]), NA),
                    
-                   ICER = c(mean(df_model_res[, 5]), NA)
+                   ICER = c(mean(df_model_res[, "ICER"]), NA)
                    )
                   
                   # print dataframe
