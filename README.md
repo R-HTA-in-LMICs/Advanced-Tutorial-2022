@@ -40,8 +40,7 @@ install.packages("devtools")
 devtools::install_github("DARTH-git/darthtools")
 ```
 
-To run the CEA, you require [`dampack`: Decision-Analytic Modeling Package](https://cran.r-project.org/web/packages/dampack/index.html), an R package for analysing and visualizing the health economic outputs of decision models. We also recommend familiarising with the useful [DARTH](http://darthworkgroup.com) coding framework described in:
-
+For syntax consistency, we follow the coding syntax framework developed by the DARTH group:
 -   Alarid-Escudero F, Krijkamp EM, Pechlivanoglou P, Jalal HJ, Kao SYZ, Yang A, Enns EA. [A Need for Change! A Coding Framework for Improving Transparency in Decision Modeling](https://link.springer.com/article/10.1007/s40273-019-00837-x). [PharmacoEconomics](https://www.springer.com/journal/40273), 2190;37(11):1329--1339. <https://doi.org/10.1007/s40273-019-00837-x>
 
 Lastly, we *strongly* recommended familiarising yourself with Shiny before undertaking the tutorial:
