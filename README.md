@@ -3,7 +3,7 @@
 <img src="misc/logo.png" width="260" align="right" />
 <br/>
 
-This repository stores the code, presentations, and material used in the R-HTA in LMICs Advanced 2022 Workshop (held in January 2023). The following sections provide a breakdown of the primary documents and guidance on how to use them for your own personal training. The tutorial is based on several open-source frameworks for modelling CEAs and Shiny apps in R for HTA (see the [citations](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022#citations) section), developed by [DARTH](https://darthworkgroup.com) group and [Dark Peak Analytics](https://darkpeakanalytics.com).
+This repository stores the code, presentations, and material used in the R-HTA in LMICs Advanced 2022 tutorial (held in January 2023). The following sections provide a breakdown of the primary documents and guidance on how to use them for your own personal training. The tutorial is based on several open-source frameworks for modelling Cost-Effectiveness Analysis models and Shiny apps in R for HTA (see the [citations](https://github.com/R-HTA-in-LMICs/Advanced-Tutorial-2022#citations) section), developed by [DARTH](https://darthworkgroup.com) group and [Dark Peak Analytics](https://darkpeakanalytics.com).
 
 ## Navigation
 
